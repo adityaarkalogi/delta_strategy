@@ -1,0 +1,12 @@
+{   
+    "ID":"1",
+    "UNDERLYING":"NIFTY",
+    "EXPIRY_TYPE":"MONTHLY",
+    "RANGE_START_TIME": "91500",
+    "RANGE_END_TIME": "94200",
+    "STRATEGY_END_TIME": "151500",
+    "LOTS":1,
+    "LOTS_SIZE":75,
+    "STRATEGY_TARGET":"",
+    "STRATEGY_STOPLOSS":""
+}

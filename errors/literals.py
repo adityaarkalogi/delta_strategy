@@ -1,0 +1,6 @@
+DUPLICATE_ENTRY = "Duplicate entry"
+NO_ROW_WAS_FOUND = "No row was found"
+PHONE = "phone"
+EMAIL = "email"
+LEG_CONFIG_ID = "leg_config_id"
+ID = "id"

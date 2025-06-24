@@ -1,0 +1,46 @@
+STRATEGY_PATH = "/strategy.json"
+
+
+STRIKE_DIFF = {
+    "NIFTY": 50,
+    "BANKNIFTY": 100
+}
+
+LOT_SIZE = {
+}
+
+FREEZE_QTY = {
+    'NIFTY': {'WEEKLY': 24, 'NEXTWEEKLY': 24, 'MONTHLY': 24},
+    'BANKNIFTY': {'WEEKLY': 30, 'NEXTWEEKLY': 30, 'MONTHLY': 30}
+}
+
+INDICES = {
+    "NIFTY": ("NFO", "NIFTY"),
+    "BANKNIFTY": ("NFO", "BANKNIFTY"),
+}
+
+MARKET_START_TIME = 91500
+
+MARKET_END_TIME = 153000
+
+HOLIDAYS = [
+    241225,
+    250226,
+    250314,
+    250331,
+    250410,
+    250414,
+    250418,
+    250501,
+    250815,
+    250827,
+    251002,
+    251021,
+    251022,
+    251105,
+    251225
+]
+
+
+VERSION = "V2.0.0 (17 APR 2025)"
+
