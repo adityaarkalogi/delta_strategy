@@ -265,231 +265,58 @@ def check_shift(strategy: Strategy):
     return shift_happend, option_to_shift, new_option, strategy_update
 
 
-def calculate_pnl(strategy: Strategy):
+def calculate_pnl(strategy: DummyStrategy):
     pnl = 0
     positions = {}
     position_count = 0
-    fe_id = strategy.fe_id
+ 
 
-    if strategy.call_hedge_position:
-        call_hedge_position = strategy.call_hedge_position
-        if (
-            call_hedge_position.net_sell_quantity
-            <= call_hedge_position.net_buy_quantity
-        ):
-            realized_pnl = call_hedge_position.net_sell_quantity * (
-                call_hedge_position.sell_average_price
-                - call_hedge_position.buy_average_price
-            )
-            ohlc = Ohlc(
-                call_hedge_position.instrument_id,
-                pricefeed.get_quote(call_hedge_position.instrument_id),
-            )
-            instrument = get_instrument_by_token(call_hedge_position.instrument_id)
-            if not ohlc.ltp:
-                ohlc.ltp = call_hedge_position.buy_average_price
-            call_hedge_position.ltp = ohlc.ltp
-            unrialized_pnl = (
-                call_hedge_position.net_buy_quantity
-                - call_hedge_position.net_sell_quantity
-            ) * (ohlc.ltp - call_hedge_position.buy_average_price)
-            pnl += realized_pnl + unrialized_pnl
-            logger.debug(
-                f"Call Hedge Position Pnl: Buy qty={call_hedge_position.net_buy_quantity}, Avg buy price={call_hedge_position.buy_average_price}, Sell qty={call_hedge_position.net_sell_quantity}, Avg sell price={call_hedge_position.sell_average_price}, Ltp={ohlc.ltp}, Realized={realized_pnl}, Unrealized={unrialized_pnl}"
-            )
-            positions[position_count] = {
-                "symbol": instrument.trading_symbol,
-                "avg_buy_price": call_hedge_position.buy_average_price,
-                "buy_qty": call_hedge_position.net_buy_quantity,
-                "avg_sell_price": call_hedge_position.sell_average_price,
-                "sell_qty": call_hedge_position.net_sell_quantity,
-                "pnl": realized_pnl + unrialized_pnl,
-                "ltp": ohlc.ltp
-            }
-            position_count += 1
+    position = strategy.position
+    instrument = get_instrument_by_token(position.instrument_id)
 
-    if strategy.put_hedge_position:
-        put_hedge_position = strategy.put_hedge_position
-        if put_hedge_position.net_sell_quantity <= put_hedge_position.net_buy_quantity:
-            realized_pnl = put_hedge_position.net_sell_quantity * (
-                put_hedge_position.sell_average_price
-                - put_hedge_position.buy_average_price
-            )
-            ohlc = Ohlc(
-                put_hedge_position.instrument_id,
-                pricefeed.get_quote(put_hedge_position.instrument_id),
-            )
-            instrument = get_instrument_by_token(put_hedge_position.instrument_id)
-            if not ohlc.ltp:
-                ohlc.ltp = put_hedge_position.buy_average_price
-            put_hedge_position.ltp = ohlc.ltp
-            unrialized_pnl = (
-                put_hedge_position.net_buy_quantity
-                - put_hedge_position.net_sell_quantity
-            ) * (ohlc.ltp - put_hedge_position.buy_average_price)
-            pnl += realized_pnl + unrialized_pnl
-            logger.debug(
-                f"Put hedge Pnl: Buy qty={put_hedge_position.net_buy_quantity}, Avg buy price={put_hedge_position.buy_average_price}, Sell qty={put_hedge_position.net_sell_quantity}, Avg sell price={put_hedge_position.sell_average_price}, Ltp={ohlc.ltp}, Realized={realized_pnl}, Unrealized={unrialized_pnl}"
-            )
-            positions[position_count] = {
-                "symbol": instrument.trading_symbol,
-                "avg_buy_price": put_hedge_position.buy_average_price,
-                "buy_qty": put_hedge_position.net_buy_quantity,
-                "avg_sell_price": put_hedge_position.sell_average_price,
-                "sell_qty": put_hedge_position.net_sell_quantity,
-                "pnl": realized_pnl + unrialized_pnl,
-                "ltp": ohlc.ltp
-            }
-            position_count += 1
-    call_position = strategy.call_position
-    instrument = get_instrument_by_token(call_position.instrument_id)
-    if call_position.net_sell_quantity > call_position.net_buy_quantity:
-        realized_pnl = call_position.net_buy_quantity * (
-            call_position.sell_average_price - call_position.buy_average_price
-        )
-        ohlc = Ohlc(
-            call_position.instrument_id,
-            pricefeed.get_quote(call_position.instrument_id),
-        )
-        if not ohlc.ltp:
-            ohlc.ltp = call_position.sell_average_price
-        call_position.ltp = ohlc.ltp
-        unrialized_pnl = (
-            call_position.net_sell_quantity - call_position.net_buy_quantity
-        ) * (call_position.sell_average_price - ohlc.ltp)
-        pnl += realized_pnl + unrialized_pnl
-    elif call_position.net_sell_quantity <= call_position.net_buy_quantity:
-        realized_pnl = call_position.net_sell_quantity * (
-            call_position.sell_average_price - call_position.buy_average_price
-        )
-        ohlc = Ohlc(
-            call_position.instrument_id,
-            pricefeed.get_quote(call_position.instrument_id),
-        )
-        if not ohlc.ltp:
-            ohlc.ltp = call_position.sell_average_price
-        call_position.ltp = ohlc.ltp
-        unrialized_pnl = (
-            call_position.net_buy_quantity - call_position.net_sell_quantity
-        ) * (ohlc.ltp - call_position.buy_average_price)
-        pnl += realized_pnl + unrialized_pnl
-    logger.debug(
-        f"Call Position Pnl: Buy qty={call_position.net_buy_quantity}, Avg buy price={call_position.buy_average_price}, Sell qty={call_position.net_sell_quantity}, Avg sell price={call_position.sell_average_price}, Ltp={ohlc.ltp}, Realized={realized_pnl}, Unrealized={unrialized_pnl}"
-    )
-    positions[position_count] = {
-        "symbol": instrument.trading_symbol,
-        "avg_buy_price": call_position.buy_average_price,
-        "buy_qty": call_position.net_buy_quantity,
-        "avg_sell_price": call_position.sell_average_price,
-        "sell_qty": call_position.net_sell_quantity,
-        "pnl": realized_pnl + unrialized_pnl,
-        "ltp": ohlc.ltp
-    }
+    # if call_position.net_sell_quantity > call_position.net_buy_quantity:
+    #     realized_pnl = call_position.net_buy_quantity * (
+    #         call_position.sell_average_price - call_position.buy_average_price
+    #     )
+    #     ohlc = Ohlc(
+    #         position.instrument_id,
+    #         pricefeed.get_quote(position.instrument_id),
+    #     )
+    #     if not ohlc.ltp:
+    #         ohlc.ltp = call_position.sell_average_price
+    #     call_position.ltp = ohlc.ltp
+    #     unrialized_pnl = (
+    #         call_position.net_sell_quantity - call_position.net_buy_quantity
+    #     ) * (call_position.sell_average_price - ohlc.ltp)
+    #     pnl += realized_pnl + unrialized_pnl
+    # elif call_position.net_sell_quantity <= call_position.net_buy_quantity:
+    #     realized_pnl = call_position.net_sell_quantity * (
+    #         call_position.sell_average_price - call_position.buy_average_price
+    #     )
+    #     ohlc = Ohlc(
+    #         position.instrument_id,
+    #         pricefeed.get_quote(position.instrument_id),
+    #     )
+    #     if not ohlc.ltp:
+    #         ohlc.ltp = call_position.sell_average_price
+    #     call_position.ltp = ohlc.ltp
+    #     unrialized_pnl = (
+    #         call_position.net_buy_quantity - call_position.net_sell_quantity
+    #     ) * (ohlc.ltp - call_position.buy_average_price)
+    #     pnl += realized_pnl + unrialized_pnl
+    # logger.debug(
+    #     f"Call Position Pnl: Buy qty={call_position.net_buy_quantity}, Avg buy price={call_position.buy_average_price}, Sell qty={call_position.net_sell_quantity}, Avg sell price={call_position.sell_average_price}, Ltp={ohlc.ltp}, Realized={realized_pnl}, Unrealized={unrialized_pnl}"
+    # )
+    # positions[position_count] = {
+    #     "symbol": instrument.trading_symbol,
+    #     "avg_buy_price": call_position.buy_average_price,
+    #     "buy_qty": call_position.net_buy_quantity,
+    #     "avg_sell_price": call_position.sell_average_price,
+    #     "sell_qty": call_position.net_sell_quantity,
+    #     "pnl": realized_pnl + unrialized_pnl,
+    #     "ltp": ohlc.ltp
+    # }
     position_count += 1
-    put_position = strategy.put_position
-    instrument = get_instrument_by_token(put_position.instrument_id)
-    if put_position.net_sell_quantity > put_position.net_buy_quantity:
-        realized_pnl = put_position.net_buy_quantity * (
-            put_position.sell_average_price - put_position.buy_average_price
-        )
-        ohlc = Ohlc(
-            put_position.instrument_id,
-            pricefeed.get_quote(put_position.instrument_id),
-        )
-        if not ohlc.ltp:
-            ohlc.ltp = put_position.sell_average_price
-        put_position.ltp = ohlc.ltp
-        unrialized_pnl = (
-            put_position.net_sell_quantity - put_position.net_buy_quantity
-        ) * (put_position.sell_average_price - ohlc.ltp)
-        pnl += realized_pnl + unrialized_pnl
-    elif put_position.net_sell_quantity <= put_position.net_buy_quantity:
-        realized_pnl = put_position.net_sell_quantity * (
-            put_position.sell_average_price - put_position.buy_average_price
-        )
-        ohlc = Ohlc(
-            put_position.instrument_id,
-            pricefeed.get_quote(put_position.instrument_id),
-        )
-        if not ohlc.ltp:
-            ohlc.ltp = put_position.sell_average_price
-        put_position.ltp = ohlc.ltp
-        unrialized_pnl = (
-            put_position.net_buy_quantity - put_position.net_sell_quantity
-        ) * (ohlc.ltp - put_position.buy_average_price)
-        pnl += realized_pnl + unrialized_pnl
-    logger.debug(
-        f"Put Position Pnl: Buy qty={put_position.net_buy_quantity}, Avg buy price={put_position.buy_average_price}, Sell qty={put_position.net_sell_quantity}, Avg sell price={put_position.sell_average_price}, Ltp={ohlc.ltp}, Realized={realized_pnl}, Unrealized={unrialized_pnl}"
-    )
-    positions[position_count] = {
-        "symbol": instrument.trading_symbol,
-        "avg_buy_price": put_position.buy_average_price,
-        "buy_qty": put_position.net_buy_quantity,
-        "avg_sell_price": put_position.sell_average_price,
-        "sell_qty": put_position.net_sell_quantity,
-        "pnl": realized_pnl + unrialized_pnl,
-        "ltp": ohlc.ltp
-    }
-    position_count += 1
-    for archived_position in strategy.archived_positions:
-        instrument = get_instrument_by_token(archived_position.instrument_id)
-        if archived_position.net_sell_quantity > archived_position.net_buy_quantity:
-            realized_pnl = archived_position.net_buy_quantity * (
-                archived_position.sell_average_price
-                - archived_position.buy_average_price
-            )
-            ohlc = Ohlc(
-                archived_position.instrument_id,
-                pricefeed.get_quote(archived_position.instrument_id),
-            )
-            archived_position.ltp = ohlc.ltp
-            if not ohlc.ltp:
-                ohlc.ltp = archived_position.sell_average_price
-            unrialized_pnl = (
-                archived_position.net_sell_quantity - archived_position.net_buy_quantity
-            ) * (archived_position.sell_average_price - ohlc.ltp)
-            pnl += realized_pnl + unrialized_pnl
-        elif archived_position.net_sell_quantity <= archived_position.net_buy_quantity:
-            realized_pnl = archived_position.net_sell_quantity * (
-                archived_position.sell_average_price
-                - archived_position.buy_average_price
-            )
-            ohlc = Ohlc(
-                archived_position.instrument_id,
-                pricefeed.get_quote(archived_position.instrument_id),
-            )
-            if not ohlc.ltp:
-                ohlc.ltp = archived_position.sell_average_price
-            archived_position.ltp = ohlc.ltp
-            unrialized_pnl = (
-                archived_position.net_buy_quantity - archived_position.net_sell_quantity
-            ) * (ohlc.ltp - archived_position.buy_average_price)
-            pnl += realized_pnl + unrialized_pnl
-        logger.debug(
-            f"Archived Position Pnl: Buy qty={archived_position.net_buy_quantity}, Avg buy price={archived_position.buy_average_price}, Sell qty={archived_position.net_sell_quantity}, Avg sell price={archived_position.sell_average_price}, Ltp={ohlc.ltp}, Realized={realized_pnl}, Unrealized={unrialized_pnl}"
-        )
-        positions[position_count] = {
-            "symbol": instrument.trading_symbol,
-            "avg_buy_price": archived_position.buy_average_price,
-            "buy_qty": archived_position.net_buy_quantity,
-            "avg_sell_price": archived_position.sell_average_price,
-            "sell_qty": archived_position.net_sell_quantity,
-            "pnl": realized_pnl + unrialized_pnl,
-            "ltp": ohlc.ltp
-        }
-        position_count += 1
-    msg = {
-        "type": LogType.PNL.name,
-        "data": {
-            "PnL": round(pnl, 4)
-        }
-    }
-    push_message(fe_id,json.dumps(msg))
-    positions_msg = {
-        "type": LogType.POSITIONS.name,
-        "data": positions
-    }
-    push_message(fe_id,json.dumps(positions_msg))
     return round(pnl, 4)
 
 

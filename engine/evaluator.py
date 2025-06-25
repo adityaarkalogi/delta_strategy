@@ -94,7 +94,7 @@ def evaluate(strategy: DummyStrategy, ltp: float, underlying_expiry: int):
                         instrument.pricefeed_token,
                         Config.PRODUCT_TYPE,
                         Config.ORDER_TYPE,
-                        PositionType.SELL,
+                        PositionType.BUY,
                         0,
                         0,
                         strategy.lots * strategy.lots_size
@@ -117,10 +117,37 @@ def evaluate(strategy: DummyStrategy, ltp: float, underlying_expiry: int):
         logger.info(f"High: {strategy.underlying_high} Low: {strategy.underlying_low} LTP : {ltp}") 
 
     elif strategy.status == StrategyStatus.RUNNING:
-        ...
+        if get_current_time_int() > int(strategy.strategy_end_time):
+            logger.info(f"Current Time exceeded the Strategy End Time !")
+
+            position_to_squareoff = strategy.position
+            adjustment_qty = strategy.lots * strategy.lots_size # CURRENTLY NOT DEALING WITH NET QTY.
+
+            ltp = get_quote(position_to_squareoff.instrument_id) # ORDER_TYPE = MARKET
+            new_order = Order(
+                uuid.uuid4().hex,
+                strategy.id,
+                position_to_squareoff.instrument_id,
+                Config.PRODUCT_TYPE,
+                Config.ORDER_TYPE,
+                PositionType.SELL,
+                ltp,
+                0,
+                adjustment_qty
+            )
+            place_order(new_order, strategy.lots_size, strategy.freeze_qty)
+            position_to_squareoff.net_buy_quantity += adjustment_qty
+            position_to_squareoff.orders.append(new_order)
+            position_to_squareoff.status = PositionStatus.PENDING
+
+            strategy.status = StrategyStatus.SQUARING_OFF
 
 def sync_positions(strategy: DummyStrategy):
     fetch_orderbook()
     if strategy.status in [StrategyStatus.RUNNING, StrategyStatus.SQUARED_OFF]:
         if strategy.position:
             sync_position(strategy.position) 
+
+
+def is_completed(strategy: DummyStrategy):
+    return True

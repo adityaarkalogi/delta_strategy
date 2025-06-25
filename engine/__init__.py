@@ -99,5 +99,16 @@ def run():
                     evaluator.sync_positions(strategy_obj)
                     strategy_obj.last_sync_time = time.time()
 
+                if strategy_obj.status == StrategyStatus.SQUARING_OFF:
+                    if time.time() - strategy_obj.last_sync_time > 2:
+                        evaluator.sync_positions(strategy_obj)
+                        logger.info("Still Syncing")
+                        strategy_obj.last_sync_time = time.time()
+
+                    if evaluator.is_completed(strategy_obj):
+                        pnl = calculate_pnl(strategy_obj)
+                        strategy_obj.status = StrategyStatus.COMPLETED
+                        logger.info(f"Strategy is Stopped @ {round(pnl,2)}/-")
+
             except Exception as e:
                 logger.error(f"Error : {e}")
