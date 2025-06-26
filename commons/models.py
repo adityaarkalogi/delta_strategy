@@ -266,7 +266,7 @@ class DummyStrategy:
         underlying_high: float = None,
         underlying_low: float = None,
         freeze_qty: int = None,
-        position: Position = None
+        # position: Position = None
    
 
     ):
@@ -283,7 +283,7 @@ class DummyStrategy:
         self.underlying_high = underlying_high
         self.underlying_low = underlying_low
         self.freeze_qty = freeze_qty
-        self.position = position 
+        self.position:Position = None 
 
         self.last_sync_time = time.time()
         self.status: StrategyStatus = StrategyStatus.CREATED

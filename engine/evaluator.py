@@ -117,6 +117,7 @@ def evaluate(strategy: DummyStrategy, ltp: float, underlying_expiry: int):
         logger.info(f"High: {strategy.underlying_high} Low: {strategy.underlying_low} LTP : {ltp}") 
 
     elif strategy.status == StrategyStatus.RUNNING:
+        
         if get_current_time_int() > int(strategy.strategy_end_time):
             logger.info(f"Current Time exceeded the Strategy End Time !")
 

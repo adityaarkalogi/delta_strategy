@@ -62,11 +62,12 @@ def run():
             if current_strategy is None:
                 continue
 
-            if get_current_time_int() >= int(current_strategy.strategy_end_time):
-                logger.info(f"Strategy Square off time already passed")
-                fe_id_map["1"] = None
-                current_strategy = None
-                continue    
+            # if get_current_time_int() >= int(current_strategy.strategy_end_time):
+            #     logger.info(f"Strategy Square off time already passed")
+            #     fe_id_map["1"] = None
+            #     current_strategy = None
+            #     continue
+              
         
         if get_current_time_int()<= MARKET_START_TIME:
             time.sleep(0.5)
@@ -100,6 +101,7 @@ def run():
                     strategy_obj.last_sync_time = time.time()
 
                 if strategy_obj.status == StrategyStatus.SQUARING_OFF:
+                    logger.info(F"Inside Squaring off section !")
                     if time.time() - strategy_obj.last_sync_time > 2:
                         evaluator.sync_positions(strategy_obj)
                         logger.info("Still Syncing")
