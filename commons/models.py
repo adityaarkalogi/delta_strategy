@@ -265,10 +265,10 @@ class DummyStrategy:
         strategy_stoploss: str,
         underlying_high: float = None,
         underlying_low: float = None,
+        pricefeed_token:int = None,
+        underlying_expiry = None,
         freeze_qty: int = None,
-        # position: Position = None
-   
-
+     
     ):
         self.id = id
         self.underlying = underlying
@@ -282,12 +282,14 @@ class DummyStrategy:
         self.strategy_stoploss = strategy_stoploss
         self.underlying_high = underlying_high
         self.underlying_low = underlying_low
+        self.pricefeed_token = pricefeed_token
+        self.underlying_expiry = underlying_expiry
         self.freeze_qty = freeze_qty
         self.position:Position = None 
 
         self.last_sync_time = time.time()
         self.status: StrategyStatus = StrategyStatus.CREATED
-    
+
 
     def __str__(self):
         return (

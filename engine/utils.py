@@ -17,7 +17,7 @@ from commons.enums import (
 )
 import uuid
 from commons.models import Instrument, Ohlc, Strategy, DummyStrategy
-from commons.utils import generate_trading_symbol, round_to
+from commons.utils import generate_trading_symbol, round_to, get_cache_data, get_underlying_expiry
 from data.models import Cache
 import pricefeed
 from config import Config
@@ -423,6 +423,19 @@ def get_required_margin(
 
 
 def new_parse_strategy(strategy_json: Dict) -> DummyStrategy:
+    underlying = Underlying(strategy_json['UNDERLYING'])
+    expirytype = ExpiryType(strategy_json['EXPIRY_TYPE'])
+
+    underlying_cache_data = get_cache_data(underlying)
+
+    pricefeed_token = underlying_cache_data.pricefeed_token
+
+    underlying_expiry = get_underlying_expiry(
+            underlying,
+            expirytype
+            )
+        
+
     strategy = DummyStrategy(
         strategy_json['ID'],
         Underlying(strategy_json['UNDERLYING']),
@@ -436,6 +449,8 @@ def new_parse_strategy(strategy_json: Dict) -> DummyStrategy:
         strategy_json.get('STRATEGY_STOPLOSS', " "),
         underlying_high=None,
         underlying_low=None,
+        pricefeed_token=pricefeed_token,
+        underlying_expiry=underlying_expiry,
         freeze_qty= FREEZE_QTY[strategy_json['UNDERLYING']][strategy_json['EXPIRY_TYPE']]
     )
 

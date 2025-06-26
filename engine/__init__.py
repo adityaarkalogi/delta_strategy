@@ -53,7 +53,6 @@ def run():
     while True:
         user_raw_data = user_com.get_data()
         if user_raw_data:
-            # logger.info(user_raw_data)
             if fe_id_map.get('1') is None:
                 strategy = new_parse_strategy(user_raw_data)
                 fe_id_map["1"] = strategy
@@ -61,14 +60,7 @@ def run():
             
             if current_strategy is None:
                 continue
-
-            # if get_current_time_int() >= int(current_strategy.strategy_end_time):
-            #     logger.info(f"Strategy Square off time already passed")
-            #     fe_id_map["1"] = None
-            #     current_strategy = None
-            #     continue
-              
-        
+                 
         if get_current_time_int()<= MARKET_START_TIME:
             time.sleep(0.5)
             continue
@@ -78,15 +70,7 @@ def run():
             return
         
         underlying_ohlc: Ohlc = pricefeed.get_quote_from_stream()
-        underlying_cache_data = get_cache_data(current_strategy.underlying.value)
 
-        pricefeed_token = underlying_cache_data.pricefeed_token
-
-        underlying_expiry = get_underlying_expiry(
-            current_strategy.underlying.value,
-            current_strategy.expirytype.value
-            )
-        
         for _, strategy_obj in fe_id_map.items():
 
             if strategy_obj is None:
