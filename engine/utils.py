@@ -447,6 +447,7 @@ def new_parse_strategy(strategy_json: Dict) -> DummyStrategy:
         strategy_json['LOTS_SIZE'],
         strategy_json.get('STRATEGY_TARGET'," "),
         strategy_json.get('STRATEGY_STOPLOSS', " "),
+        strategy_json.get('SL_TG_TYPE', None),
         underlying_high=None,
         underlying_low=None,
         pricefeed_token=pricefeed_token,

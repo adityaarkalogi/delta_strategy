@@ -98,3 +98,13 @@ def get_cache_data(underlying: str):
 
 def get_underlying_expiry(underlying: str, expiry_type: str):
     return data.Cache().pull(f"{underlying}_{expiry_type}")
+
+
+def calc_by_points(underlying_value: float, strategy_value: float) -> float:
+    value = underlying_value + strategy_value
+    return value
+
+
+
+def calc_by_percentage(underlying_value:float) -> float:
+    ...

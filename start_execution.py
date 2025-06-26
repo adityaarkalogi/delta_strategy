@@ -111,7 +111,6 @@ logging.config.dictConfig(dict_config)
 logger = logging.getLogger("root")
 
 
-
 if __name__ == "__main__":
     try:
         engine.setup()

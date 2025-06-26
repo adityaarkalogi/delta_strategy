@@ -126,6 +126,10 @@ class LogType(enum.Enum):
     STRADDLEUPDATE = "STRADDLEUPDATE"
 
 
+class SlTgType(enum.Enum):
+    POINTS = 'POINTS'
+    PERCENTAGE = 'PERCENTAGE'
+
 class MessageType:
     STRATEGY_UPDATE = "STRATEGY_UPDATE" 
     OPENED = "OPENED"

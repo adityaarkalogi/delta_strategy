@@ -77,8 +77,8 @@ def run():
                 continue
 
             try:
-                if strategy_obj and underlying_ohlc.token == pricefeed_token:
-                    evaluator.evaluate(strategy_obj, underlying_ohlc.ltp, underlying_expiry)
+                if strategy_obj and underlying_ohlc.token == strategy_obj.pricefeed_token:
+                    evaluator.evaluate(strategy_obj, underlying_ohlc.ltp, strategy_obj.underlying_expiry)
                 
                 if time.time() - strategy_obj.last_sync_time >=1:
                     evaluator.sync_positions(strategy_obj)

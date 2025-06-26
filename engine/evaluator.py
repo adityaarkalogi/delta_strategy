@@ -1,10 +1,10 @@
 import datetime
 import json
 import uuid
-from commons.enums import InstrumentType, Message, MessageType, OptionType, OrderType, PositionStatus, PositionType, StrategyStatus
+from commons.enums import InstrumentType, Message, MessageType, OptionType, OrderType, PositionStatus, PositionType, StrategyStatus, SlTgType
 from errors.system_defined import BrokerError
 from pricefeed import get_quote
-from commons.utils import get_current_time_int
+from commons.utils import get_current_time_int, calc_by_points, calc_by_percentage
 from commons.models import Order, Position, Strategy, DummyStrategy
 from config import Config
 from data.models import Cache
@@ -117,7 +117,16 @@ def evaluate(strategy: DummyStrategy, ltp: float, underlying_expiry: int):
         logger.info(f"High: {strategy.underlying_high} Low: {strategy.underlying_low} LTP : {ltp}") 
 
     elif strategy.status == StrategyStatus.RUNNING:
-        
+
+        if get_current_time_int() > int(strategy.range_end_time):
+            if strategy.sl_tg_type is not None:
+                if strategy.sl_tg_type  == SlTgType.POINTS:
+                    if strategy.strategy_target is not None:
+                        limit_value = calc_by_points(strategy.underlying_high, strategy.strategy_target)
+                else:
+                    ...
+
+
         if get_current_time_int() > int(strategy.strategy_end_time):
             logger.info(f"Current Time exceeded the Strategy End Time !")
 

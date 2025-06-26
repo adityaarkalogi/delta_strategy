@@ -263,6 +263,7 @@ class DummyStrategy:
         lots_size: int,
         strategy_target: str,
         strategy_stoploss: str,
+        sl_tg_type:str,
         underlying_high: float = None,
         underlying_low: float = None,
         pricefeed_token:int = None,
@@ -280,6 +281,7 @@ class DummyStrategy:
         self.lots_size = lots_size
         self.strategy_target = strategy_target
         self.strategy_stoploss = strategy_stoploss
+        self.sl_tg_type = sl_tg_type
         self.underlying_high = underlying_high
         self.underlying_low = underlying_low
         self.pricefeed_token = pricefeed_token

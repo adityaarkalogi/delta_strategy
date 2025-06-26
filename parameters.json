@@ -8,5 +8,6 @@
     "LOTS":1,
     "LOTS_SIZE":75,
     "STRATEGY_TARGET":"",
-    "STRATEGY_STOPLOSS":""
+    "STRATEGY_STOPLOSS":"",
+    "SL_TG_TYPE":"POINTS"
 }
