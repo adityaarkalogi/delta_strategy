@@ -426,13 +426,13 @@ def new_parse_strategy(strategy_json: Dict) -> DummyStrategy:
     underlying = Underlying(strategy_json['UNDERLYING'])
     expirytype = ExpiryType(strategy_json['EXPIRY_TYPE'])
 
-    underlying_cache_data = get_cache_data(underlying)
-
+    underlying_cache_data = get_cache_data(underlying.value)
+   
     pricefeed_token = underlying_cache_data.pricefeed_token
 
     underlying_expiry = get_underlying_expiry(
-            underlying,
-            expirytype
+            underlying.value,
+            expirytype.value
             )
         
 
@@ -445,8 +445,9 @@ def new_parse_strategy(strategy_json: Dict) -> DummyStrategy:
         strategy_json['STRATEGY_END_TIME'],
         strategy_json['LOTS'],
         strategy_json['LOTS_SIZE'],
-        strategy_json.get('STRATEGY_TARGET'," "),
-        strategy_json.get('STRATEGY_STOPLOSS', " "),
+        strategy_json.get('LIMIT_TYPE', None),
+        strategy_json.get('STRATEGY_TARGET',None),
+        strategy_json.get('STRATEGY_STOPLOSS', None),
         strategy_json.get('SL_TG_TYPE', None),
         underlying_high=None,
         underlying_low=None,

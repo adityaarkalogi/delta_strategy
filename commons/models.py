@@ -261,8 +261,9 @@ class DummyStrategy:
         strategy_end_time: str,
         lots: int,
         lots_size: int,
-        strategy_target: str,
-        strategy_stoploss: str,
+        limit_type:str,
+        strategy_target: int,
+        strategy_stoploss: int,
         sl_tg_type:str,
         underlying_high: float = None,
         underlying_low: float = None,
@@ -279,6 +280,7 @@ class DummyStrategy:
         self.strategy_end_time = strategy_end_time
         self.lots = lots
         self.lots_size = lots_size
+        self.limit_type = limit_type
         self.strategy_target = strategy_target
         self.strategy_stoploss = strategy_stoploss
         self.sl_tg_type = sl_tg_type
@@ -287,8 +289,10 @@ class DummyStrategy:
         self.pricefeed_token = pricefeed_token
         self.underlying_expiry = underlying_expiry
         self.freeze_qty = freeze_qty
-        self.position:Position = None 
 
+        self.mtm_value: float = 0  
+        self.underlying_value: float = 0
+        self.position:Position = None 
         self.last_sync_time = time.time()
         self.status: StrategyStatus = StrategyStatus.CREATED
 

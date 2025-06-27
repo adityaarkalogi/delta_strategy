@@ -8,6 +8,7 @@ import data
 
 from commons.constants import HOLIDAYS
 from commons.models import Singleton
+from commons.enums import LimitType
 
 logger = logging.getLogger(__name__)
 
@@ -100,11 +101,19 @@ def get_underlying_expiry(underlying: str, expiry_type: str):
     return data.Cache().pull(f"{underlying}_{expiry_type}")
 
 
-def calc_by_points(underlying_value: float, strategy_value: float) -> float:
-    value = underlying_value + strategy_value
+def calc_by_points(underlying_value: float, limit_type:str, strategy_value: int) -> float:
+    if limit_type == LimitType.TARGET.value:
+        value = underlying_value + strategy_value
+    else:
+        value = underlying_value - strategy_value
     return value
 
+def calc_by_percentage(underlying_value: float, limit_type:str, strategy_value: int) -> float:
+    percentage_value = underlying_value * (strategy_value / 100)
+    
+    if limit_type == LimitType.TARGET.value:
+        value = underlying_value + percentage_value
+    else:
+        value = underlying_value - percentage_value
 
-
-def calc_by_percentage(underlying_value:float) -> float:
-    ...
+    return value

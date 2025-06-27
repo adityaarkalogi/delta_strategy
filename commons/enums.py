@@ -130,6 +130,11 @@ class SlTgType(enum.Enum):
     POINTS = 'POINTS'
     PERCENTAGE = 'PERCENTAGE'
 
+class LimitType(enum.Enum):
+    TARGET = "TARGET"
+    STOPLOSS = "STOPLOSS"
+    BOTH = "BOTH"
+
 class MessageType:
     STRATEGY_UPDATE = "STRATEGY_UPDATE" 
     OPENED = "OPENED"
